@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:android_alarm_manager/android_alarm_manager.dart';
+import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 
@@ -17,6 +18,7 @@ class _HomePageState extends State<HomePage> {
   bool isOnDaily = false;
   int alarmIdPeriodic = 1;
   int alarmIdDaily = 2;
+  int alarmIdDailyUser = 3;
 
   @override
   void initState() {
@@ -43,6 +45,8 @@ class _HomePageState extends State<HomePage> {
           Periodic(),
           Text('Daily'),
           Daily(),
+          Text('시간을 선택하세요.'),
+          TimeSelection(),
         ],
       ),
 
@@ -87,6 +91,39 @@ class _HomePageState extends State<HomePage> {
       },
     );
   }
+
+  TimeSelection() {
+    return TextButton(
+      onPressed: () {
+        DatePicker.showTimePicker(
+          context,
+          showTitleActions: true,
+          onChanged: (time) {
+            print('change ${time}');
+          }, onConfirm: (time) {
+            print('confirm ${time}');
+            _setUserDailyAlarm(time);
+        }, currentTime: DateTime.now(), locale: LocaleType.ko);
+      },
+      child: Text(
+        '시간 선택 하기',
+        style: TextStyle(color: Colors.blue),
+      )
+    );
+  }
+
+  void _setUserDailyAlarm(DateTime time) {
+    print('유저 알림을 설정하였습니다.');
+    AndroidAlarmManager.periodic(
+      Duration(microseconds: 0),
+      // Duration(hours: 24),
+      alarmIdDailyUser,
+      fireDaily,
+      startAt: _getTime(time),
+      exact: true,
+      wakeup: true,
+    );
+  }
 }
 
 void fireAlarm() {
@@ -103,4 +140,9 @@ DateTime _getDate() {
   DateTime dt = DateTime.now();
   dt.add(Duration(seconds: 5));
   return dt;
+}
+
+DateTime _getTime(DateTime time) {
+  print('_getTime ${time}');
+  return time;
 }
