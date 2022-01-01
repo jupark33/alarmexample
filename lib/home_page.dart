@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:android_alarm_manager/android_alarm_manager.dart';
+import 'package:timezone/timezone.dart' as tz;
+import 'package:timezone/data/latest.dart' as tz;
+
+import 'noti_service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -13,6 +17,13 @@ class _HomePageState extends State<HomePage> {
   bool isOnDaily = false;
   int alarmIdPeriodic = 1;
   int alarmIdDaily = 2;
+
+  @override
+  void initState() {
+    tz.initializeTimeZones();
+    super.initState();
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +94,9 @@ void fireAlarm() {
 }
 
 void fireDaily() {
+  tz.initializeTimeZones();
   print('Daily Alarm Fired at ${DateTime.now()}');
+  NotificationService().showNotification(1, "매일 알람", "알람발생했습니다.${DateTime.now()}", 5);
 }
 
 DateTime _getDate() {
