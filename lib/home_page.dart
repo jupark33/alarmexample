@@ -17,28 +17,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // body: Center(
-      //   child: Transform.scale(
-      //     scale: 2,
-      //     child: Switch(
-      //       value: isOnPeriodic,
-      //       onChanged: (value) {
-      //         setState(() {
-      //           isOn = value;
-      //         });
-      //         if (isOn == true) {
-      //           AndroidAlarmManager.periodic(
-      //               Duration(seconds: 5), alarmId, fireAlarm);
-      //         } else {
-      //           AndroidAlarmManager.cancel(alarmId);
-      //           print('Alarm Timer Canceled');
-      //         }
-      //       },
-      //     ),
-      //   ),
-      // ),
       body: Body(),
-
     );
   }
 
