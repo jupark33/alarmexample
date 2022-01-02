@@ -1,5 +1,6 @@
 // import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
 import 'package:alarmexample/constants.dart';
+import 'package:alarmexample/util/date_util.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:android_alarm_manager/android_alarm_manager.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
 import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 
+import 'data/data_single.dart';
 import 'noti_service.dart';
 
 class HomePage extends StatefulWidget {
@@ -60,7 +62,6 @@ class _HomePageState extends State<HomePage> {
     if (dt.year == 1900) {
       return Text('시간을 선택하세요. 선택된 시간');
     } else {
-      // return Text('시간을 선택하세요. 선택된 시간 : ${dt.hour}:${dt.minute}:${dt.second}');
       var time = formatDate(dt, [HH, ':', nn, ':', ss]);
       return Text('시간을 선택하세요. 선택된 시간 : ${time}');
     }
@@ -94,7 +95,7 @@ class _HomePageState extends State<HomePage> {
         });
         if (isOnDaily == true) {
           AndroidAlarmManager.periodic(
-              Duration(milliseconds: 0), alarmIdDaily, fireDaily, startAt: _getDate());
+              Duration(milliseconds: 0), alarmIdDaily, fireDaily, startAt: DateUtil.getTimeAfterSecs());
         } else {
           AndroidAlarmManager.cancel(alarmIdDaily);
           print('Daily Alarm Timer Canceled');
@@ -113,7 +114,7 @@ class _HomePageState extends State<HomePage> {
             onChanged: (time) {
               // print('change ${time}');
             }, onConfirm: (time) {
-              print('confirm ${time}');
+              // print('confirm ${time}');
               setState(() {
                 dt = time;
               });
@@ -127,6 +128,8 @@ class _HomePageState extends State<HomePage> {
       )
     );
   }
+
+
 }
 
 void _cancelAndSet(DateTime time) {
@@ -151,7 +154,14 @@ void _setUserDailyAlarm(DateTime time) {
     rescheduleOnReboot: true,
   );
 
-  UserDt = time;
+  // DateUtil.UserDt = time;
+  // DateUtil.setUserDt(time);
+
+  var userData = UserDataSingle();
+  // userData.dt = time;
+  UserDataSingle.dt = time;
+  userData.setDay(time.day);
+
 }
 
 // _HomePageState 안으로 들어가면 실행 안됨.
@@ -161,7 +171,9 @@ void fireDaily() {
   NotificationService().showNotification(1, "매일 알람", "알람발생했습니다.${DateTime.now()}", 5);
 
   // 다음(내일) 알람 설정
-  DateTime nextDt = _getTimeAfterDay(UserDt);
+  // DateTime nextDt = DateUtil.getTimeAfterDay(DateUtil.UserDt);
+  // DateTime nextDt = DateUtil.getTomorrow();
+  DateTime nextDt = UserDataSingle().getTomorrow();
   print('다음 알람 설정 ${nextDt}');
   _cancelAndSet(nextDt);
 }
@@ -170,15 +182,3 @@ void fireAlarm() {
   print('Alarm Fired at ${DateTime.now()}');
 }
 
-DateTime _getDate() {
-  DateTime dt = DateTime.now();
-  dt.add(Duration(seconds: 5));
-  return dt;
-}
-
-DateTime _getTimeAfterDay(DateTime time) {
-  time = time.add(const Duration(days: 1));
-  print('_getTimeAfterDay, Minute : ${time.minute}');
-  DateTime dtNew = DateTime(time.year, time.month, time.day, time.hour, time.minute, time.second, 0, 0);
-  return dtNew;
-}
