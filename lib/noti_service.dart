@@ -57,4 +57,34 @@ class NotificationService {
         androidAllowWhileIdle: true
     );
   }
+
+  /**
+   * daily noti
+   */
+  Future<void> setDailyNoti(int id, String title, String body, tz.TZDateTime notiTime) async {
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+        id,
+        title,
+        body,
+        notiTime,
+        const NotificationDetails(
+            android: AndroidNotificationDetails(
+                'main_channel',
+                'Main Channel',
+                'Main Channel noti',
+                importance: Importance.max,
+                priority: Priority.max,
+                icon: '@drawable/ic_flutter_noti'
+            ),
+            iOS: IOSNotificationDetails(
+              sound: 'default.wav',
+              presentAlert: true,
+              presentBadge: true,
+              presentSound: true,
+            )
+        ),
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+        androidAllowWhileIdle: true
+    );
+  }
 }

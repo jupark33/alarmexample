@@ -76,8 +76,14 @@ class _HomePageState extends State<HomePage> {
           isOnPeriodic = value;
         });
         if (isOnPeriodic == true) {
-          AndroidAlarmManager.periodic(
-              Duration(hours: 1, minutes: 0, seconds: 0), alarmIdPeriodic, fireAlarm, startAt: DateUtil.getTimeAfterSecs(), exact: true);
+          // AndroidAlarmManager.periodic(
+          //     Duration(hours: 1, minutes: 0, seconds: 0), alarmIdPeriodic, fireAlarm, startAt: DateUtil.getTimeAfterSecs(), exact: true);
+
+          //
+          // NotificationService().showNotification(1, "매일 알람", "알람발생했습니다.${DateTime.now()}", 5);
+          NotificationService().setDailyNoti(1, "매일 알람", "알람발생했습니다.${DateTime.now()}", _setNotiTime(DateUtil.getTimeAfterSecs()));
+
+
         } else {
           AndroidAlarmManager.cancel(alarmIdPeriodic);
           print('Alarm Timer Canceled');
@@ -130,6 +136,18 @@ class _HomePageState extends State<HomePage> {
   }
 
 
+}
+
+tz.TZDateTime _setNotiTime(DateTime dateTime) {
+  tz.initializeTimeZones();
+  tz.setLocalLocation(tz.getLocation('Asia/Seoul'));
+
+  final now = tz.TZDateTime.now(tz.local);
+  var scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day,
+      dateTime.hour, dateTime.minute
+  );
+
+  return scheduledDate;
 }
 
 void _cancelAndSet(DateTime time) {
