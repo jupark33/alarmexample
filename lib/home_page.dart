@@ -45,7 +45,7 @@ class _HomePageState extends State<HomePage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Text('Every 5secs'),
+          Text('Every 2minutes'),
           Periodic(),
           Text('Daily'),
           Daily(),
@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
         });
         if (isOnPeriodic == true) {
           AndroidAlarmManager.periodic(
-              Duration(seconds: 5), alarmIdPeriodic, fireAlarm);
+              Duration(hours: 1, minutes: 0, seconds: 0), alarmIdPeriodic, fireAlarm, startAt: DateUtil.getTimeAfterSecs(), exact: true);
         } else {
           AndroidAlarmManager.cancel(alarmIdPeriodic);
           print('Alarm Timer Canceled');
@@ -154,14 +154,8 @@ void _setUserDailyAlarm(DateTime time) {
     rescheduleOnReboot: true,
   );
 
-  // DateUtil.UserDt = time;
-  // DateUtil.setUserDt(time);
-
   var userData = UserDataSingle();
-  // userData.dt = time;
-  UserDataSingle.dt = time;
-  userData.setDay(time.day);
-
+  userData.setDt(time);
 }
 
 // _HomePageState 안으로 들어가면 실행 안됨.
@@ -171,14 +165,14 @@ void fireDaily() {
   NotificationService().showNotification(1, "매일 알람", "알람발생했습니다.${DateTime.now()}", 5);
 
   // 다음(내일) 알람 설정
-  // DateTime nextDt = DateUtil.getTimeAfterDay(DateUtil.UserDt);
-  // DateTime nextDt = DateUtil.getTomorrow();
-  DateTime nextDt = UserDataSingle().getTomorrow();
-  print('다음 알람 설정 ${nextDt}');
-  _cancelAndSet(nextDt);
+  // DateTime nextDt = UserDataSingle().getTomorrow();
+  // print('다음 알람 설정 ${nextDt}');
+  // _cancelAndSet(nextDt);
 }
 
 void fireAlarm() {
+  tz.initializeTimeZones();
   print('Alarm Fired at ${DateTime.now()}');
+  NotificationService().showNotification(1, "시간 알람", "알람발생했습니다.${DateTime.now()}", 5);
 }
 
