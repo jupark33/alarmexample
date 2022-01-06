@@ -5,8 +5,8 @@ import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:android_alarm_manager/android_alarm_manager.dart';
 import 'package:flutter_datetime_picker/flutter_datetime_picker.dart';
-import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
+import 'package:timezone/timezone.dart' as tz;
 
 import 'data/data_single.dart';
 import 'noti_service.dart';
@@ -48,7 +48,7 @@ class _HomePageState extends State<HomePage> {
           Text('Every 2minutes'),
           Periodic(),
           Text('Daily'),
-          Daily(),
+          Daily(),  // ON/OFF 스위치
           SettedTime(),
           TimeSelection(),
         ],
@@ -76,14 +76,8 @@ class _HomePageState extends State<HomePage> {
           isOnPeriodic = value;
         });
         if (isOnPeriodic == true) {
-          // AndroidAlarmManager.periodic(
-          //     Duration(hours: 1, minutes: 0, seconds: 0), alarmIdPeriodic, fireAlarm, startAt: DateUtil.getTimeAfterSecs(), exact: true);
-
-          //
-          // NotificationService().showNotification(1, "매일 알람", "알람발생했습니다.${DateTime.now()}", 5);
-          NotificationService().setDailyNoti(1, "매일 알람", "알람발생했습니다.${DateTime.now()}", _setNotiTime(DateUtil.getTimeAfterSecs()));
-
-
+          AndroidAlarmManager.periodic(
+              Duration(hours: 1, minutes: 0, seconds: 0), alarmIdPeriodic, fireAlarm, startAt: DateUtil.getTimeAfterSecs(5), exact: true);
         } else {
           AndroidAlarmManager.cancel(alarmIdPeriodic);
           print('Alarm Timer Canceled');
@@ -92,6 +86,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // ON/OFF 스위치
   Daily() {
     return Switch(
       value: isOnDaily,
@@ -100,13 +95,11 @@ class _HomePageState extends State<HomePage> {
           isOnDaily = value;
         });
         if (isOnDaily == true) {
-          AndroidAlarmManager.periodic(
-              Duration(milliseconds: 0), alarmIdDaily, fireDaily, startAt: DateUtil.getTimeAfterSecs());
+          NotificationService().setDailyNoti("매일 알람", "설정했던 시간 : ${DateTime.now()}", 5);
         } else {
-          AndroidAlarmManager.cancel(alarmIdDaily);
+          NotificationService().cancelDailyNoti();
           print('Daily Alarm Timer Canceled');
         }
-
       },
     );
   }
@@ -134,18 +127,16 @@ class _HomePageState extends State<HomePage> {
       )
     );
   }
-
-
 }
 
 tz.TZDateTime _setNotiTime(DateTime dateTime) {
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation('Asia/Seoul'));
 
-  final now = tz.TZDateTime.now(tz.local);
-  var scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day,
-      dateTime.hour, dateTime.minute
-  );
+  // final now = tz.TZDateTime.now(tz.local);
+  final now = tz.TZDateTime.from(DateTime.now(), tz.getLocation('Asia/Seoul'));
+  // var scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, dateTime.hour, dateTime.minute);
+  tz.TZDateTime scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, dateTime.hour, dateTime.minute);
 
   return scheduledDate;
 }

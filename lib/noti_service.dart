@@ -3,6 +3,9 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:timezone/data/latest.dart' as tz;
 
 class NotificationService {
+
+  final dailyNotiId = 3;
+
   static final NotificationService _notificationService = NotificationService._internal();
   
   factory NotificationService() {
@@ -61,12 +64,12 @@ class NotificationService {
   /**
    * daily noti
    */
-  Future<void> setDailyNoti(int id, String title, String body, tz.TZDateTime notiTime) async {
+  Future<void> setDailyNoti(String title, String body, int seconds) async {
     await flutterLocalNotificationsPlugin.zonedSchedule(
-        id,
+        dailyNotiId,
         title,
         body,
-        notiTime,
+        tz.TZDateTime.now(tz.local).add(Duration(seconds: seconds)),
         const NotificationDetails(
             android: AndroidNotificationDetails(
                 'main_channel',
@@ -84,7 +87,13 @@ class NotificationService {
             )
         ),
         uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
-        androidAllowWhileIdle: true
+        androidAllowWhileIdle: true,
+      matchDateTimeComponents: DateTimeComponents.time,
+
     );
+  }
+
+  Future<void> cancelDailyNoti() async {
+    await flutterLocalNotificationsPlugin.cancel(dailyNotiId);
   }
 }

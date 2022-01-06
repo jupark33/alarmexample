@@ -22,9 +22,9 @@ class DateUtil {
     return dtNew;
   }
 
-  static DateTime getTimeAfterSecs() {
+  static DateTime getTimeAfterSecs(int secs) {
     DateTime dt = DateTime.now();
-    dt = dt.add(Duration(seconds: 5));
+    dt = dt.add(Duration(seconds: secs));
     return dt;
   }
 
