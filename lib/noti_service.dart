@@ -93,7 +93,46 @@ class NotificationService {
     );
   }
 
+  /**
+   * daily noti
+   */
+  Future<void> setDailyNotiDt(String title, String body, DateTime dt) async {
+    tz.TZDateTime tzDt = getNotiTime(dt);
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      dailyNotiId,
+      title,
+      body,
+      tzDt,
+      const NotificationDetails(
+          android: AndroidNotificationDetails(
+              'main_channel',
+              'Main Channel',
+              'Main Channel noti',
+              importance: Importance.max,
+              priority: Priority.max,
+              icon: '@drawable/ic_flutter_noti'
+          ),
+          iOS: IOSNotificationDetails(
+            sound: 'default.wav',
+            presentAlert: true,
+            presentBadge: true,
+            presentSound: true,
+          )
+      ),
+      uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+      androidAllowWhileIdle: true,
+      matchDateTimeComponents: DateTimeComponents.time,
+
+    );
+  }
+
   Future<void> cancelDailyNoti() async {
     await flutterLocalNotificationsPlugin.cancel(dailyNotiId);
+  }
+
+  tz.TZDateTime getNotiTime(DateTime dateTime) {
+    tz.TZDateTime dt = tz.TZDateTime.now(tz.local);
+    return tz.TZDateTime(tz.local, dt.year, dt.month, dt.day, dateTime.hour, dateTime.minute);
   }
 }

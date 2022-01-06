@@ -117,7 +117,8 @@ class _HomePageState extends State<HomePage> {
               setState(() {
                 dt = time;
               });
-              _cancelAndSet(time);
+              NotificationService().setDailyNotiDt("매일 알람", "설정했던 시간 : ${DateTime.now()}", time);
+              print('설정했던 시간 : ${DateTime.now()}');
             }, currentTime: DateTime.now(), locale: LocaleType.ko
         );
       },
